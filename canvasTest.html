@@ -183,6 +183,7 @@ function imageSave(){
 }
 
 function imageLoad(){
+    imageErase()
     var dataURL = localStorage.getItem("canvasSave");
     console.log(typeof dataURL)
     var img = new Image;
@@ -192,11 +193,8 @@ function imageLoad(){
     };
 }
 function imageErase() {
-    var m = confirm("Want to clear");
-    if (m) {
-        ctx.clearRect(0, 0, w, h);
-        document.getElementById("canvasimg").style.display = "none";
-    }
+    ctx.clearRect(0, 0, w, h);
+    document.getElementById("canvasimg").style.display = "none";
 }
 </script>
 </html>
