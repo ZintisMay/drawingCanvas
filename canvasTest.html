@@ -1,0 +1,202 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style type="text/css" media="screen">
+    .colorSelect {
+        display: flex;
+    }
+
+    .flex {
+        display: flex;
+    }
+    </style>
+</head>
+
+
+<body onload="init()">
+    <section>
+        <canvas id="theCanvas" width="600" height="600" style="border:2px solid;"></canvas>
+    </section>
+    <section>
+        <!-- <div style="">Choose Color</div> -->
+       <!--  <div class="flex">
+            <div style="width:10px;height:10px;background:green;" id="green" onclick="setColor(this)"></div>
+            <div style="width:10px;height:10px;background:blue;" id="blue" onclick="setColor(this)"></div>
+            <div style="width:10px;height:10px;background:red;" id="red" onclick="setColor(this)"></div>
+            <div style="width:10px;height:10px;background:yellow;" id="yellow" onclick="setColor(this)"></div>
+            <div style="width:10px;height:10px;background:orange;" id="orange" onclick="setColor(this)"></div>
+            <div style="width:10px;height:10px;background:black;" id="black" onclick="setColor(this)"></div>
+        </div> -->
+        <!-- <div>Choose Size</div> -->
+<!--         <div class="flex">
+            <div class="setSizeButton" style="margin:10px;border:1px solid black;" id="size-2" onclick="setSize(this)">2</div>
+            <div class="setSizeButton" style="margin:10px;border:1px solid black;" id="size-5" onclick="setSize(this)">5</div>
+            <div class="setSizeButton" style="margin:10px;border:1px solid black;" id="size-10" onclick="setSize(this)">10</div>
+            <div class="setSizeButton" style="margin:10px;border:1px solid black;" id="size-20" onclick="setSize(this)">20</div>
+            <div class="setSizeButton" style="margin:10px;border:1px solid black;" id="size-40" onclick="setSize(this)">40</div>
+        </div> -->
+        <!-- <div style="">Eraser</div> -->
+        <!-- <div style="width:15px;height:15px;background:white;border:2px solid;" id="white" onclick="setColor(this)"></div> -->
+        <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+        <div class="flex">
+            <input type="button" value="save" id="btn" size="30" onclick="imageSave()" style="">
+            <input type="button" value="load" id="clr" size="23" onclick="imageLoad()" style="">
+            <input type="button" value="clear" id="clr" size="23" onclick="imageErase()" style="">
+        </div>
+    </section>
+</body>
+<script type="text/javascript">
+var canvas, ctx, flag = false,
+    pX = 0,
+    cX = 0,
+    pY = 0,
+    cY = 0;
+
+var currentColor = "black",
+    penWidth = 5;
+
+function xyDiff(){
+    return Math.abs(pX - cX) + Math.abs(pY - cY)
+}
+
+function init() {
+    // canvas = document.getElementById('theCanvas');
+    ctx = theCanvas.getContext("2d");
+    w = theCanvas.width;
+    h = theCanvas.height;
+
+    theCanvas.addEventListener("mousemove", function(e) {
+        findXYAndDraw('move', e)
+    }, false);
+    theCanvas.addEventListener("mousedown", function(e) {
+        findXYAndDraw('draw', e)
+    }, false);
+    theCanvas.addEventListener("mouseup", function(e) {
+        findXYAndDraw('up', e)
+    }, false);
+    theCanvas.addEventListener("mouseout", function(e) {
+        findXYAndDraw('out', e)
+    }, false);
+}
+
+function setColor(obj) {
+    switch (obj.id) {
+        case "green":
+            currentColor = "green";
+            break;
+        case "blue":
+            currentColor = "blue";
+            break;
+        case "red":
+            currentColor = "red";
+            break;
+        case "yellow":
+            currentColor = "yellow";
+            break;
+        case "orange":
+            currentColor = "orange";
+            break;
+        case "black":
+            currentColor = "black";
+            break;
+        case "white":
+            currentColor = "white";
+            break;
+    }
+}
+
+// function setSize(obj) {
+//     let sizeButtons = document.getElementsByClassName("setSizeButton")
+//     for (let el of sizeButtons) {
+//         el.style.backgroundColor = "white";
+//         el.style.color = "black"
+//     }
+//     obj.style.backgroundColor = "black"
+//     obj.style.color = "white"
+//     penWidth = obj.id.split("-")[1]
+// }
+
+
+
+// function save() {
+//     // document.getElementById("canvasimg").style.border = "2px solid";
+//     // var dataURL = theCanvas.toDataURL();
+//     // document.getElementById("canvasimg").src = dataURL;
+//     // document.getElementById("canvasimg").style.display = "inline";
+//     imageSave(theCanvas)
+// }
+
+// function load(){
+
+// }
+
+function findXYAndDraw(action, e) {
+    // console.log("findXYAndDraw")
+    //track movement
+    pX = cX;
+    pY = cY;
+    cX = e.clientX - theCanvas.offsetLeft;
+    cY = e.clientY - theCanvas.offsetTop;
+
+    if (action == 'draw') {
+        //Turn on drawing!
+        flag = true;
+        drawDot()
+    } else if (action == 'up' || action == "out") {
+        // turn off drawing
+        flag = false; 
+    } else if (action == 'move') {
+        // draw while moving (make a dot if movement is small)
+        flag && (xyDiff() > 5 ? drawLine() : drawDot())
+    }
+}
+
+function drawDot(){
+    ctx.beginPath();
+    ctx.fillStyle = currentColor;
+    // ctx.fillRect(cX, cY, 2, 2);
+    ctx.arc(cX, cY, penWidth/2, 0, 2 * Math.PI, false);
+    ctx.fill();
+    // ctx.lineWidth = 5;
+    ctx.closePath();
+}
+
+function drawLine() {
+    ctx.beginPath();
+    ctx.moveTo(pX, pY);
+    ctx.lineTo(cX, cY);
+    // ctx.strokeStyle = x;
+    ctx.lineWidth = penWidth;
+    // ctx.arc(cX, cY, penWidth, 0, 2 * Math.PI, false);
+    ctx.fillStyle = currentColor;
+    ctx.fill();
+    ctx.lineWidth = penWidth;
+
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function imageSave(){
+    localStorage.setItem("canvasSave", theCanvas.toDataURL());
+}
+
+function imageLoad(){
+    var dataURL = localStorage.getItem("canvasSave");
+    console.log(typeof dataURL)
+    var img = new Image;
+    img.src = dataURL;
+    img.onload =  () => {
+        ctx.drawImage(img, 0, 0);
+    };
+}
+function imageErase() {
+    var m = confirm("Want to clear");
+    if (m) {
+        ctx.clearRect(0, 0, w, h);
+        document.getElementById("canvasimg").style.display = "none";
+    }
+}
+</script>
+</html>
